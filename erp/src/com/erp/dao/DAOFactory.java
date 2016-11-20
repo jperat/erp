@@ -62,6 +62,10 @@ public class DAOFactory {
         return new ProjectDaoImpl(this);
     }
     
+    public ProjectProductDao getProjectProductDao() {
+        return new ProjectProductImplDao(this);
+    }
+    
     public void createDb() throws SQLException {
         try {
             this.connection = this.getConnection();

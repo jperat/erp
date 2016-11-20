@@ -159,6 +159,7 @@ public class ProjectDaoImpl implements ProjectDao {
         project.setId( resultSet.getLong( "id" ) );
         project.setName( resultSet.getString( "name" ) );
         project.setDescription( resultSet.getString( "decription" ) );
+        project.setProjectProducts(daoFactory.getInstance().getProjectProductDao().findByProject(project));
         return project;
     }
 

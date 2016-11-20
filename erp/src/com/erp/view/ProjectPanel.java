@@ -449,7 +449,9 @@ public class ProjectPanel extends javax.swing.JPanel {
                 this.QuantityField.setText("Quantity");
                 this.jList2.setModel(productQuantityListModel);
                 this.jList1.setModel(productListModel);
-                DAOFactory.getInstance().getProjectDao().update(project);
+                DAOFactory.getInstance().getProjectProductDao().create(projectProduct);
+                productQuantity.setQuantity(productQuantity.getQuantity() - projectProduct.getQuantity());
+                DAOFactory.getInstance().getProductQuantityDao().update(productQuantity);
             }
         }
     }//GEN-LAST:event_AddButtonActionPerformed
