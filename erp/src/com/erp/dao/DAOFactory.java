@@ -23,52 +23,49 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class DAOFactory {
-    
-    private final static String DRIVER = "org.apache.derby.jdbc.EmbeddedDriver";
-    private final static String JDBC_URL = "jdbc:derby:test;create=true";
-    private final static String FRAMEWORK = "embedded";
-    private final static String PROTOCOL = "jdbc:derby:";
-    private final static String DBNAME = "erp";
-    
+
+    private final static String DBNAME = "erp_db";
+    private final static String JDBC_URL = "jdbc:derby:" + DBNAME + ";create=true";
+
     private Connection connection = null;
-    
+
     public static DAOFactory getInstance() throws DAOConfigurationException {
-        DAOFactory instance = new DAOFactory();
-        return instance;
+        return new DAOFactory();
     }
 
     /* package */
     Connection getConnection() throws SQLException {
-        return connection = DriverManager.getConnection(PROTOCOL + DBNAME + ";create=true");
+        DriverManager.registerDriver(new org.apache.derby.jdbc.EmbeddedDriver());
+        return connection = DriverManager.getConnection(JDBC_URL);
     }
-    
+
     public ProductDao getProductDAO() {
         return new ProductDaoImpl(this);
     }
-    
+
     public ProductQuantityDao getProductQuantityDao() {
         return new ProductQuantityDaoImpl(this);
     }
-    
+
     public OrderDao getOrderDao() {
         return new OrderDaoImpl(this);
     }
-    
+
     public OrderProductDao getOrderProductDao() {
         return new OrderProductDaoImpl(this);
     }
-    
+
     public ProjectDao getProjectDao() {
         return new ProjectDaoImpl(this);
     }
-    
+
     public ProjectProductDao getProjectProductDao() {
         return new ProjectProductImplDao(this);
     }
-    
+
     public void createDb() throws SQLException {
         try {
-            this.connection = this.getConnection();
+            this.getConnection();
             Statement s = connection.createStatement();
             if (!this.tableExists(connection, "orders")) {
                 s.execute("CREATE TABLE orders ( id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), reference VARCHAR(45) DEFAULT NULL, date date DEFAULT NULL)");
@@ -88,8 +85,8 @@ public class DAOFactory {
             if (!this.tableExists(connection, "project_product")) {
                 s.execute("CREATE TABLE project_product ( id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), id_project INT NOT NULL, id_product INT NOT NULL, batch_number VARCHAR(45) NOT NULL,  serial_number VARCHAR(45) NOT NULL, quantity INT NOT NULL, date date NOT NULL )");
             }
-        } catch (DAOConfigurationException ex) {
-            System.out.print(ex.getMessage());
+        } catch (DAOConfigurationException e) {
+            e.printStackTrace();
         } finally {
             connection.close();
         }
